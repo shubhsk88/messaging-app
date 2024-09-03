@@ -1,10 +1,6 @@
 import { Button } from '@/components/ui/button';
+import { AuthScreen } from '@/features/auth/components/auth-screen';
 
 export default function Home() {
-  return (
-    <main>
-      Hello world
-      <Button>Click me</Button>
-    </main>
-  );
+  return <AuthScreen />;
 }
