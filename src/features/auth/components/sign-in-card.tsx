@@ -13,6 +13,7 @@ import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { SignInFlow } from '../types';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useAuthActions } from '@convex-dev/auth/react';
 
 interface SignInCardProps {
   setState: (state: SignInFlow) => void;
@@ -31,8 +32,11 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
     formState: { errors },
   } = useForm<SignInInput>();
   const onSubmit: SubmitHandler<SignInInput> = (data) => console.log(data);
+  const { signIn } = useAuthActions();
+  const handleProviderSignIn = (val: 'google' | 'github') => {
+    signIn(val);
+  };
 
-  console.log(watch('email'));
   return (
     <Card className="w-full h-full p-8">
       <CardHeader className="px-0 pt-0">
@@ -75,7 +79,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
           </Button>
           <Button
             disabled={false}
-            onClick={() => {}}
+            onClick={() => handleProviderSignIn('github')}
             variant="outline"
             size="lg"
             className="w-full relative"
