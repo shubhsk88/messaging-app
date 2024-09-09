@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -14,6 +14,8 @@ import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { SignInFlow } from '../types';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { useAuthActions } from '@convex-dev/auth/react';
+import { TriangleAlert } from 'lucide-react';
 
 interface SignUpCardProps {
   setState: (state: SignInFlow) => void;
@@ -31,7 +33,15 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
     watch,
     formState: { errors },
   } = useForm<SignUpInput>();
-  const onSubmit: SubmitHandler<SignUpInput> = (data) => console.log(data);
+  const { signIn } = useAuthActions();
+  const [error, setError] = useState('');
+  const onSubmitPassword: SubmitHandler<SignUpInput> = async (data) => {
+    try {
+      await signIn('password', { ...data, flow: 'signUp' });
+    } catch {
+      setError('Something went wrong, Please try again after sometime');
+    }
+  };
 
   console.log(watch('email'));
 
@@ -43,8 +53,14 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
           Use your email or another service to continue
         </CardDescription>
       </CardHeader>
+      {!!error && (
+        <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+          <TriangleAlert className="size-4" />
+          <p>{error}</p>
+        </div>
+      )}
       <CardContent className="space-y-5 px-0 pb-0">
-        <form className="space-y-2.5" onSubmit={handleSubmit(onSubmit)}>
+        <form className="space-y-2.5" onSubmit={handleSubmit(onSubmitPassword)}>
           <Input
             disabled={false}
             placeholder="Email"
