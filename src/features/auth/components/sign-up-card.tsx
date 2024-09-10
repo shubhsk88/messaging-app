@@ -22,6 +22,7 @@ interface SignUpCardProps {
 }
 type SignUpInput = {
   email: string;
+  name: string;
   password: string;
   confirmPassword: string;
 };
@@ -61,6 +62,13 @@ export const SignUpCard = ({ setState }: SignUpCardProps) => {
       )}
       <CardContent className="space-y-5 px-0 pb-0">
         <form className="space-y-2.5" onSubmit={handleSubmit(onSubmitPassword)}>
+          <Input
+            disabled={false}
+            placeholder="Name"
+            type="text"
+            {...register('name', { required: true })}
+            required
+          />
           <Input
             disabled={false}
             placeholder="Email"
