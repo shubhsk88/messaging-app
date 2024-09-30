@@ -4,6 +4,7 @@ import './globals.css';
 import { ConvexClientProvider } from '@/providers/convex-client-provider';
 import { ConvexAuthNextjsServerProvider } from '@convex-dev/auth/nextjs/server';
 import { Modals } from '@/components/modals';
+import { QueryProvider } from '@/providers/query-provider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,8 +22,12 @@ export default function RootLayout({
     <ConvexAuthNextjsServerProvider>
       <html lang="en">
         <body className={inter.className}>
-          <Modals />
-          <ConvexClientProvider>{children}</ConvexClientProvider>
+          <ConvexClientProvider>
+            <QueryProvider>
+              <Modals />
+              {children}
+            </QueryProvider>
+          </ConvexClientProvider>
         </body>
       </html>
     </ConvexAuthNextjsServerProvider>
