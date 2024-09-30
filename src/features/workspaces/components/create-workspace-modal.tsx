@@ -10,6 +10,7 @@ import { useCreateWorkspace } from '@/features/workspaces/api/use-create-workspa
 import { useCreateWorkspaceModal } from '@/features/workspaces/store/use-create-workspace-modal';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import { toast } from 'sonner';
 
 export const CreateWorkspaceModal = () => {
   const [isOpen, setIsOpen] = useCreateWorkspaceModal();
@@ -32,6 +33,7 @@ export const CreateWorkspaceModal = () => {
       {
         onSuccess(data, variables, context) {
           router.push(`/workspace/${data}`);
+          toast.success('Workspace created');
           handleClose();
         },
       }
@@ -48,6 +50,7 @@ export const CreateWorkspaceModal = () => {
           <Input
             onChange={(evt) => setName(evt.target.value)}
             value={name}
+            name="name"
             disabled={isPending}
             required
             autoFocus

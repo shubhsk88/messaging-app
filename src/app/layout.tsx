@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import { Toaster } from '@/components/ui/sonner';
 import { ConvexClientProvider } from '@/providers/convex-client-provider';
 import { ConvexAuthNextjsServerProvider } from '@convex-dev/auth/nextjs/server';
 import { Modals } from '@/components/modals';
@@ -25,6 +26,7 @@ export default function RootLayout({
           <ConvexClientProvider>
             <QueryProvider>
               <Modals />
+              <Toaster />
               {children}
             </QueryProvider>
           </ConvexClientProvider>
