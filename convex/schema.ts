@@ -14,7 +14,12 @@ const schema = defineSchema({
     userId: v.id('users'),
     workspaceId: v.id('workspace'),
     role:v.union(v.literal('admin'), v.literal('member'))
-  }).index('by_user_id',['userId']).index('by_workspace_id',['workspaceId']).index('by_user_id_and_workspace_id',['userId','workspaceId']),
+  }).index('by_user_id', ['userId']).index('by_workspace_id', ['workspaceId']).index('by_user_id_and_workspace_id', ['userId', 'workspaceId']),
+  channels: defineTable({
+    name: v.string()
+    , workspaceId: v.id('workspace')
+  }).index('by_workspace_id', ['workspaceId'])
+,
   // Your other tables...
 });
 
