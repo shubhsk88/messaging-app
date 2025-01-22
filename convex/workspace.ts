@@ -8,6 +8,25 @@ const generateCode = () => {
     const code = Math.random().toString(36).substring(2, 8);
     return code
 }
+
+export const newJoinCode = mutation({
+    args: {
+        workspaceId: v.id('workspace')
+    },
+    handler: async (ctx, args) => {
+        const userId = await auth.getUserId(ctx);
+        if (!userId) {
+            throw new Error('User not authenticated')
+        }
+        const member = await ctx.db.query('members').withIndex('by_user_id_and_workspace_id', q => q.eq('userId', userId).eq('workspaceId', args.workspaceId)).unique();
+        if (!member || member.role !== 'admin') {
+            throw new Error('User not authorized')
+        }
+        const joinCode = generateCode();
+        await ctx.db.patch(args.workspaceId, { joinCode })
+        return args.workspaceId
+    }
+})
 export const get = query({
     args:{},
     handler: async (ctx) => {
