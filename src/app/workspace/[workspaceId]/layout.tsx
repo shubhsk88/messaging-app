@@ -15,7 +15,7 @@ interface WorkspaceLayoutProps {
 
 const WorkspaceLayout = ({ children }: WorkspaceLayoutProps) => {
   return (
-    <div className="h-full bg-red-200">
+    <div className="h-full ">
       <Toolbar />
       <div className="flex h-[calc(100vh-40px)]">
         <Sidebar />
