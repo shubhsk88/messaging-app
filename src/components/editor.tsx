@@ -2,10 +2,18 @@ import Quill, { Delta, Op, QuillOptions } from 'quill';
 import { MdSend } from 'react-icons/md';
 import 'quill/dist/quill.snow.css';
 import { PiTextAa } from 'react-icons/pi';
-import { MutableRefObject, useEffect, useLayoutEffect, useRef } from 'react';
+import {
+  MutableRefObject,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import { Button } from './ui/button';
-import { ImageIcon, Smile } from 'lucide-react';
+import { ImageIcon, Key, Smile } from 'lucide-react';
 import { Hint } from './hint';
+import { set } from 'react-hook-form';
+import { cn } from '@/lib/utils';
 
 type EditorValue = {
   image: File | null;
@@ -25,9 +33,11 @@ const Editor = ({
   onSubmit,
   placeholder,
   disabled,
+  innerRef,
   defaultValue,
   variant = 'create',
 }: EditorProps) => {
+  const [text, setText] = useState('');
   const submitRef = useRef(onSubmit);
   const placeholderRef = useRef(placeholder);
   const disabledRef = useRef(disabled);
@@ -51,14 +61,62 @@ const Editor = ({
     const options: QuillOptions = {
       theme: 'snow',
       placeholder: placeholderRef.current,
+      modules: {
+        toolbar: [
+          ['bold', 'italic'],
+          ['link'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+        ],
+        keyboard: {
+          bindings: {
+            enter: {
+              key: 'Enter',
+              handler: () => {
+                //TODO submut
+                return;
+              },
+            },
+            shift_enter: {
+              enter: 'Enter',
+              shiftKey: true,
+              handler: () => {
+                quillRef.current?.insertText(
+                  quillRef.current.getSelection()?.index || 0,
+                  '\n'
+                );
+              },
+            },
+          },
+        },
+      },
     };
     const quill = new Quill(editorContainer, options);
+    quillRef.current = quill;
+    quillRef.current.focus();
+    if (innerRef) {
+      innerRef.current = quill;
+    }
+    if (defaultValueRef.current) quill.setContents(defaultValueRef.current);
+    setText(quill.getText());
+    quill.on(Quill.events.TEXT_CHANGE, () => {
+      setText(quill.getText());
+    });
     return () => {
+      quill.off(Quill.events.TEXT_CHANGE);
       if (container) {
         container.innerHTML = '';
       }
+      if (innerRef) {
+        innerRef.current = null;
+      }
+      if (quillRef.current) {
+        quillRef.current = null;
+      }
     };
-  }, []);
+  }, [innerRef]);
+
+  const isEmpty = text.replace(/<(.|\n)*?>/g, '').trim().length === 0;
+  console.log({ isEmpty, text });
   return (
     <div className="flex flex-col">
       <div className="flex flex-col border border-slate-200 rounded-md overflow-hidden focus-within:border-slate-300 focus-within:shadow-sm transition bg-white">
@@ -118,8 +176,14 @@ const Editor = ({
           )}
           {variant === 'create' && (
             <Button
+              disabled={disabled || isEmpty}
               size="iconSm"
-              className="ml-auto bg-[#007a5a] hover:bg-[#007a5a]/80 text-white"
+              className={cn(
+                'ml-auto',
+                isEmpty
+                  ? 'bg-white hover:bg-white text-muted-foreground'
+                  : 'bg-[#007a5a] hover:bg-[#007a5a]/80 text-white'
+              )}
             >
               <MdSend className="size-4" />
             </Button>
